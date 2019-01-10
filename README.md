@@ -2,8 +2,9 @@
 
 Meta camera Hw interface for mosaic of cameras
 
+## An python code example: mosaic of 2 simulator cameras
 
-       
+```python       
 from Lima import Core, Simulator, Meta        
 
 cam1 = Simulator.Camera()
@@ -30,3 +31,4 @@ ct = Core.CtControl(meta_hwint)
 
 ct.prepareAcq()
 ct.startAcq()
+```
