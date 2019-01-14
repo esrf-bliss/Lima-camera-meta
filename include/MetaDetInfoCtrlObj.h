@@ -19,11 +19,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //###########################################################################
+
+#pragma once
+
 #ifndef METADETINFOCTRLOBJ_H
 #define METADETINFOCTRLOBJ_H
 
+#include <meta_export.h>
+
 #include "lima/HwDetInfoCtrlObj.h"
-#include "lima/Debug.h"
 
 namespace lima
 {
@@ -31,14 +35,14 @@ namespace lima
   namespace Meta
   {
     class Interface;
-    class DetInfoCtrlObj : public HwDetInfoCtrlObj, public HwMaxImageSizeCallbackGen
+    class META_EXPORT DetInfoCtrlObj : public HwDetInfoCtrlObj, public HwMaxImageSizeCallbackGen
     {
       DEB_CLASS_NAMESPC(DebModCamera, "DetInfoCtrlObj","Meta");
       class _MaxImageSizeCallback;
       friend class _MaxImageSizeCallback;
       friend class Interface;
     public:
-      DetInfoCtrlObj(Interface&);
+      DetInfoCtrlObj(Interface& inter);
       virtual ~DetInfoCtrlObj();
 
       virtual void getMaxImageSize(Size& max_image_size);

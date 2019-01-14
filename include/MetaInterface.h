@@ -19,9 +19,14 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //###########################################################################
+
+#pragma once
+
 #ifndef METAINTERFACE_H
 #define METAINTERFACE_H
 #include <map>
+
+#include <meta_export.h>
 
 #include "lima/HwInterface.h"
 
@@ -33,7 +38,7 @@ namespace lima
   {
     class DetInfoCtrlObj;
     class SyncCtrlObj;
-    class Interface : public HwInterface
+    class META_EXPORT Interface : public HwInterface
     {
       DEB_CLASS_NAMESPC(DebModCamera, "MetaInterface", "Meta");
       friend class DetInfoCtrlObj;
@@ -60,7 +65,7 @@ namespace lima
       typedef std::pair<int,int> ColumnRow;
       struct ltColumnRow
       {
-	bool operator()(const ColumnRow& a,const ColumnRow& b)
+	bool operator()(const ColumnRow& a,const ColumnRow& b) const
 	{
 	  return a.second == b.second ? 
 	    a.first < b.first : a.second < b.second;

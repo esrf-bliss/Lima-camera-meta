@@ -19,8 +19,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //###########################################################################
+
+#pragma once
+
 #ifndef METASYNCCTRLOBJ_H
 #define METASYNCCTRLOBJ_H
+
+#include <meta_export.h>
 
 #include "lima/HwSyncCtrlObj.h"
 #include "lima/HwInterface.h"
@@ -31,7 +36,7 @@ namespace lima
   {
     class Interface;
 
-    class SyncCtrlObj : public HwSyncCtrlObj
+    class META_EXPORT SyncCtrlObj : public HwSyncCtrlObj
     {
       DEB_CLASS_NAMESPC(DebModCamera,"SyncCtrlObj","Meta");
     public:

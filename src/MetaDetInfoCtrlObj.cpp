@@ -47,8 +47,8 @@ private:
   DetInfoCtrlObj& m_det;
 };
 
-DetInfoCtrlObj::DetInfoCtrlObj(Interface& interface):
-  m_interface(interface)
+DetInfoCtrlObj::DetInfoCtrlObj(Interface& inter):
+  m_interface(inter)
 {
 }
 
