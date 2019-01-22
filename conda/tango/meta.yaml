@@ -1,7 +1,7 @@
 {% set version = GIT_DESCRIBE_TAG[1:] %}
 
 package:
-  name: lima-camera-simulator-tango
+  name: lima-camera-meta-tango
   version: {{ version }}
 
 source:
