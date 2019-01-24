@@ -10,7 +10,7 @@ from Lima import Core, Simulator, Meta
 cam1 = Simulator.Camera()
 cam2 = Simulator.Camera()
 hwint1 = Simulator.Interface(cam1)
-hwint1 = Simulator.Interface(cam2)
+hwint2 = Simulator.Interface(cam2)
 
 meta_config = '2x1'
 #meta_config = '1x2'
