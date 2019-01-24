@@ -137,7 +137,7 @@ class MetaMaxipix:
     
     @Core.DEB_MEMBER_FUNCT
     def setShutterLevel(self, level):
-	for p in range(5):
+        for p in range(5):
             self.priam[p].setShutterLevel(level)       
         
     @Core.DEB_MEMBER_FUNCT
@@ -149,8 +149,8 @@ class MetaMaxipix:
         
     @Core.DEB_MEMBER_FUNCT
     def setEnergy(self, energy):
-	for m in range(5):
-	    self.mpx[m].setEnergy(energy)
+        for m in range(5):
+            self.mpx[m].setEnergy(energy)
                 
     @Core.DEB_MEMBER_FUNCT
     def getEnergy(self):
@@ -472,10 +472,10 @@ def get_control(espia_dev_nb = [],
     if reconstruction_active.lower() == 'true': active = True
     else: active  = False
     if len(config_name) is not 5:
-	print config_name
-	raise Exception, "Invalid number of priam configuration, must be 5 !"
+        print (config_name)
+        raise Exception("Invalid number of priam configuration, must be 5 !")
     else:
-	for p in range(5):
+        for p in range(5):
             _MaxipixCamera.append(MaxipixModule.Camera(int(espia_dev_nb[p]), config_path, config_name[p], active))
             
             _MaxipixInterface.append(MaxipixModule[p].Interface(_MaxipixCamera[p]))
@@ -498,7 +498,7 @@ def get_control(espia_dev_nb = [],
             _MetaInterface.addInterface(0,3, _MaxipixInterface[3])
             _MetaInterface.addInterface(0,4, _MaxipixInterface[4])
         else:
-            raise Exception, "Invalid value for property meta_config: "+meta_config
+            raise Exception("Invalid value for property meta_config: "+meta_config)
 
     
     return Core.CtControl(_MetaInterface)
