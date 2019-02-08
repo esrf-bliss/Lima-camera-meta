@@ -23,6 +23,6 @@ namespace Meta
     virtual int 	getNbHwAcquiredFrames();
 
   private:
-    Interface(const Meta::Interface);
+    Interface(const Meta::Interface&);
   };
 };
