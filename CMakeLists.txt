@@ -26,8 +26,6 @@ cmake_minimum_required(VERSION 3.1)
 
 project(meta)
 
-set(NAME "meta") # This is used by LimaTools
-
 # Include additional modules that are used inconditionnaly
 include(GNUInstallDirs)
 include(GenerateExportHeader)
@@ -52,43 +50,23 @@ if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 endif()
 
 if (CAMERA_MASTER_PROJECT)
-  find_package(Lima REQUIRED)
+  find_package(Lima REQUIRED COMPONENTS devel tools)
 endif()
 
 # CMake additional macros
-set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake ${LIMA_CMAKE_INCLUDE_DIRS} ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${LIMA_CMAKE_INCLUDE_DIRS} ${CMAKE_MODULE_PATH})
+
+include(LimaTools)
 
 # Set version
 include(project_version)
 
 # Enable python binding code compilation using sip generator
-if (CAMERA_MASTER_PROJECT)	
-  option(LIMA_ENABLE_PYTHON "compile python binding code?" OFF)	
-endif()
-
-if (LIMA_ENABLE_PYTHON)
-  # Find python interpreter and libs
-  find_package(PythonInterp)
-  find_package(PythonLibs)
-  if(${PYTHONINTERP_FOUND})
-    # python site-packages folder
-    execute_process(
-      COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_python_lib; print (get_python_lib())"
-      OUTPUT_VARIABLE _PYTHON_SITE_PACKAGES_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+if (CAMERA_MASTER_PROJECT)
+  option(LIMA_ENABLE_PYTHON "compile python binding code?" OFF)
+  if (LIMA_ENABLE_PYTHON)
+    limatools_find_python_and_sip()
   endif()
-
-  set(PYTHON_SITE_PACKAGES_DIR ${_PYTHON_SITE_PACKAGES_DIR} CACHE PATH "where should python modules be installed?")
-
-  find_package(SIP REQUIRED)
-  include(SIPMacros)
-  if(WIN32)
-    set(SIP_TAGS WIN32_PLATFORM)
-  elseif(UNIX)
-    set(SIP_TAGS POSIX_PLATFORM)
-  endif(WIN32)
-  set(SIP_EXTRA_OPTIONS -e -g)
-
-  find_package(NumPy REQUIRED)
 endif()
 
 file(GLOB_RECURSE META_INCS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
@@ -134,7 +112,6 @@ endif()
 
 # Binding code for python
 if(LIMA_ENABLE_PYTHON)
-  include(LimaTools)
   limatools_run_sip_for_camera(meta)
 endif()
 
@@ -174,9 +151,12 @@ install(
 
 if(LIMA_ENABLE_PYTHON)
   install(
-    FILES python/__init__.py
+    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/python/
     DESTINATION "${PYTHON_SITE_PACKAGES_DIR}/Lima/Meta"
-  )
+    )
+  if (LIMA_ENABLE_PYTANGO_SERVER)
+    add_subdirectory(tango)
+  endif()
 endif()
 
 ## Tests
