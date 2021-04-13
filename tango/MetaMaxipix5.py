@@ -455,7 +455,6 @@ class MetaMaxipix5Class(PyTango.DeviceClass):
 #----------------------------------------------------------------------------
 #                              Plugins
 #----------------------------------------------------------------------------
-from Lima.Maxipix.MpxAcq import MpxAcq
 import time
 
 _MaxipixCamera = []
@@ -478,8 +477,8 @@ def get_control(espia_dev_nb = [],
         for p in range(5):
             _MaxipixCamera.append(MaxipixModule.Camera(int(espia_dev_nb[p]), config_path, config_name[p], active))
             
-            _MaxipixInterface.append(MaxipixModule[p].Interface(_MaxipixCamera[p]))
-            time.sleep(3)
+            _MaxipixInterface.append(MaxipixModule.Interface(_MaxipixCamera[p]))
+            time.sleep(2)
 
         global _MetaInterface            
         _MetaInterface = Meta.Interface()
