@@ -18,13 +18,12 @@ build:
 
 requirements:
   build:
+    - ninja
     - cmake
-    - make
-    - git
     - lima-core
   run:
     - lima-tango-server
-    - lima-camera-simulator
+    - lima-camera-meta
 
 about:
   home: https://github.com/esrf-bliss/Lima
