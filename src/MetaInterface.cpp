@@ -70,7 +70,8 @@ protected:
   bool newFrameReady(const HwFrameInfoType& frame_info)
   {
     Data aFrameData;
-    CtBuffer::transformHwFrameInfoToData(aFrameData,frame_info);
+    std::function<void(void *)> empty_deleter;
+    CtBuffer::getDataFromAnonymousHwFrameInfo(aFrameData,frame_info,empty_deleter);
 
     HwReconstructionCtrlObj* reconstruction;
     m_hwinterface->getHwCtrlObj(reconstruction);
