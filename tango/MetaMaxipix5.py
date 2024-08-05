@@ -3,7 +3,7 @@
 #
 # Copyright (C) : 2009-2024
 # European Synchrotron Radiation Facility
-# CS40220 38043 Grenoble Cedex 9 
+# CS40220 38043 Grenoble Cedex 9
 # FRANCE
 #
 # Contact: lima@esrf.fr
@@ -21,12 +21,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 ############################################################################
-#=============================================================================
+# =============================================================================
 #
 # file :        MetaMaxipix5.py
 #
 # description : Python source for the MetaMaxipix5, a Lima Meta detector
-#                for 5x1 or 3x2 maxipix meta assembly. 
+#                for 5x1 or 3x2 maxipix meta assembly.
 #                The class is derived from Device. It represents the
 #                CORBA servant object which will be accessed from the
 #                network. All commands which can be executed on the
@@ -38,9 +38,9 @@
 #               BP 220, Grenoble 38043
 #               FRANCE
 #
-#=============================================================================
+# =============================================================================
 #         (c) - Bliss - ESRF
-#=============================================================================
+# =============================================================================
 #
 import PyTango
 import sys, types, os, time
@@ -53,23 +53,23 @@ from Lima import Meta
 # and Lima interfaces.
 from Lima.Server import AttrHelper
 
+
 class MetaMaxipix:
-    Core.DEB_CLASS(Core.DebModApplication, 'MetaMaxipix')
+    Core.DEB_CLASS(Core.DebModApplication, "MetaMaxipix")
 
     @Core.DEB_MEMBER_FUNCT
     def __init__(self, hwint, mpx):
         self.hwint = hwint
         self.mpx = mpx
-        self.priam=[]
+        self.priam = []
         for h in hwint:
             self.priam.append(h.priamAcq())
 
-                
     @Core.DEB_MEMBER_FUNCT
     def setFillMode(self, mode):
         for h in self.hwint:
             h.setFillMode(mode)
-                
+
     @Core.DEB_MEMBER_FUNCT
     def getFillMode(self):
         if self.hwint[0].getFillMode() != self.hwint[1].getFillMode():
@@ -77,48 +77,47 @@ class MetaMaxipix:
         else:
             return self.hwint[0].getFillMode()
 
-    
     @Core.DEB_MEMBER_FUNCT
     def setReadyMode(self, mode):
         for p in self.priam:
             p.setReadyMode(mode)
-        
+
     @Core.DEB_MEMBER_FUNCT
     def getReadyMode(self):
         if self.priam[0].getReadyMode() != self.priam[1].getReadyMode():
             return -1
         else:
             return self.priam[0].getReadyMode()
-        
+
     @Core.DEB_MEMBER_FUNCT
     def setGateMode(self, mode):
         for p in self.priam:
             p.setGateMode(mode)
-        
+
     @Core.DEB_MEMBER_FUNCT
     def getGateMode(self):
         if self.priam[0].getGateMode() != self.priam[1].getGateMode():
             return -1
         else:
             return self.priam[0].getGateMode()
-        
+
     @Core.DEB_MEMBER_FUNCT
     def setReadyLevel(self, level):
         for p in self.priam:
             p.setReadyLevel(level)
-        
+
     @Core.DEB_MEMBER_FUNCT
     def getReadyLevel(self):
         if self.priam[p].getReadyLevel() != self.priam[p].getReadyLevel():
             return -1
         else:
             return self.priam[0].getReadyLevel()
-        
+
     @Core.DEB_MEMBER_FUNCT
     def setGateLevel(self, level):
         for p in self.priam:
             p.setGateLevel(level)
-        
+
     @Core.DEB_MEMBER_FUNCT
     def getGateLevel(self):
         if self.priam[0].getGateLevel() != self.priam[1].getGateLevel():
@@ -137,33 +136,32 @@ class MetaMaxipix:
             return -1
         else:
             return self.priam[0].getTriggerLevel()
-    
+
     @Core.DEB_MEMBER_FUNCT
     def setShutterLevel(self, level):
         for p in self.priam:
-            p.setShutterLevel(level)       
-        
+            p.setShutterLevel(level)
+
     @Core.DEB_MEMBER_FUNCT
     def getShutterLevel(self):
         if self.priam[0].getShutterLevel() != self.priam[1].getShutterLevel():
             return -1
         else:
             return self.priam[0].getTriggerLevel()
-        
+
     @Core.DEB_MEMBER_FUNCT
     def setEnergy(self, energy):
         for h in self.hwint:
             h.setEnergy(energy)
-                
+
     @Core.DEB_MEMBER_FUNCT
     def getEnergy(self):
         energy = self.hwint[0].getEnergy()
         return energy
-        
-        
+
     @Core.DEB_MEMBER_FUNCT
-    def getConfigName(self) :
-        cfg_name = ''
+    def getConfigName(self):
+        cfg_name = ""
         m = 1
         for cfg in self.mpx.config_name:
             cfg_name += f"m{m}: {cfg}, "
@@ -171,76 +169,84 @@ class MetaMaxipix:
         return cfg_name
 
     @Core.DEB_MEMBER_FUNCT
-    def getConfigPath(self) :
+    def getConfigPath(self):
         cfg_path = ""
         if self.mpx.config_path:
-            cfg_path = self.mpx.config_path 
+            cfg_path = self.mpx.config_path
         return cfg_path
 
     @Core.DEB_MEMBER_FUNCT
     def getEspiaDevNb(self):
         espia_nb = ""
         for espia in self.mpx.espia_dev_nb:
-            espia_nb += f"{espia}, "           
+            espia_nb += f"{espia}, "
         return espia_nb
-    
+
     @Core.DEB_MEMBER_FUNCT
     def getMetaConfig(self):
         return self.mpx.meta_config
 
+
 class MetaMaxipix5(PyTango.Device_4Impl):
 
-    Core.DEB_CLASS(Core.DebModApplication, 'MetaMaxipix5')
-    
+    Core.DEB_CLASS(Core.DebModApplication, "MetaMaxipix5")
 
-#------------------------------------------------------------------
-#    Device constructor
-#------------------------------------------------------------------
+    # ------------------------------------------------------------------
+    #    Device constructor
+    # ------------------------------------------------------------------
     @Core.DEB_MEMBER_FUNCT
-    def __init__(self,*args) :
-        PyTango.Device_4Impl.__init__(self,*args)
-	
-        self.__SignalLevel = {'LOW_FALL': MaxipixModule.PriamAcq.LOW_FALL,\
-                              'HIGH_RISE': MaxipixModule.PriamAcq.HIGH_RISE}
+    def __init__(self, *args):
+        PyTango.Device_4Impl.__init__(self, *args)
+
+        self.__SignalLevel = {
+            "LOW_FALL": MaxipixModule.PriamAcq.LOW_FALL,
+            "HIGH_RISE": MaxipixModule.PriamAcq.HIGH_RISE,
+        }
         self.__ReadyLevel = self.__SignalLevel
         self.__GateLevel = self.__SignalLevel
         self.__TriggerLevel = self.__SignalLevel
         self.__ShutterLevel = self.__SignalLevel
-        
-        self.__ReadyMode =   {'EXPOSURE': MaxipixModule.PriamAcq.EXPOSURE,\
-                              'EXPOSURE_READOUT': MaxipixModule.PriamAcq.EXPOSURE_READOUT}
-        self.__GateMode =    {'INACTIVE': MaxipixModule.PriamAcq.INACTIVE,\
-                              'ACTIVE': MaxipixModule.PriamAcq.ACTIVE}
-        self.__FillMode =    {'RAW': MaxipixModule.MaxipixReconstruction.RAW,
-                              'ZERO': MaxipixModule.MaxipixReconstruction.ZERO,
-                              'DISPATCH': MaxipixModule.MaxipixReconstruction.DISPATCH,
-                              'MEAN': MaxipixModule.MaxipixReconstruction.MEAN
-                              }
-        
-        self.__Attribute2FunctionBase = {'signal_level': 'SignalLevel',
-                                         'ready_level': 'ReadyLevel',
-                                         'gate_level': 'GateLevel',
-                                         'shutter_level': 'ShutterLevel',
-                                         'trigger_level': 'TriggerLevel',
-                                         'ready_mode': 'ReadyMode',
-                                         'gate_mode': 'GateMode',
-                                         'fill_mode': 'FillMode',
-                                         'energy_threshold': 'Energy'
-                                         }
+
+        self.__ReadyMode = {
+            "EXPOSURE": MaxipixModule.PriamAcq.EXPOSURE,
+            "EXPOSURE_READOUT": MaxipixModule.PriamAcq.EXPOSURE_READOUT,
+        }
+        self.__GateMode = {
+            "INACTIVE": MaxipixModule.PriamAcq.INACTIVE,
+            "ACTIVE": MaxipixModule.PriamAcq.ACTIVE,
+        }
+        self.__FillMode = {
+            "RAW": MaxipixModule.MaxipixReconstruction.RAW,
+            "ZERO": MaxipixModule.MaxipixReconstruction.ZERO,
+            "DISPATCH": MaxipixModule.MaxipixReconstruction.DISPATCH,
+            "MEAN": MaxipixModule.MaxipixReconstruction.MEAN,
+        }
+
+        self.__Attribute2FunctionBase = {
+            "signal_level": "SignalLevel",
+            "ready_level": "ReadyLevel",
+            "gate_level": "GateLevel",
+            "shutter_level": "ShutterLevel",
+            "trigger_level": "TriggerLevel",
+            "ready_mode": "ReadyMode",
+            "gate_mode": "GateMode",
+            "fill_mode": "FillMode",
+            "energy_threshold": "Energy",
+        }
 
         self.__MetaMpx = MetaMaxipix(_MaxipixInterface, self)
-        
+
         self.init_device()
 
-#------------------------------------------------------------------
-#    Device destructor
-#------------------------------------------------------------------
+    # ------------------------------------------------------------------
+    #    Device destructor
+    # ------------------------------------------------------------------
     def delete_device(self):
         pass
 
-#------------------------------------------------------------------
-#    Device initialization
-#------------------------------------------------------------------
+    # ------------------------------------------------------------------
+    #    Device initialization
+    # ------------------------------------------------------------------
     @Core.DEB_MEMBER_FUNCT
     def init_device(self):
         self.set_state(PyTango.DevState.ON)
@@ -249,293 +255,285 @@ class MetaMaxipix5(PyTango.Device_4Impl):
 
         # Apply property to the attributes
 
-        for attr_name in ['fill_mode','ready_mode','ready_level','gate_mode','gate_level','shutter_level','trigger_level'] :       
-            self.applyNewPropery(attr_name ,None)
-                                         
-	
-#==================================================================
-# 
-# Some Utils
-#
-#==================================================================
+        for attr_name in [
+            "fill_mode",
+            "ready_mode",
+            "ready_level",
+            "gate_mode",
+            "gate_level",
+            "shutter_level",
+            "trigger_level",
+        ]:
+            self.applyNewPropery(attr_name, None)
+
+    # ==================================================================
+    #
+    # Some Utils
+    #
+    # ==================================================================
 
     @Core.DEB_MEMBER_FUNCT
     def applyNewPropery(self, prop_name, extra=None):
-        if extra is not None: name = self.__OtherAttribute2FunctionBase[prop_name]
-        else: name = self.__Attribute2FunctionBase[prop_name]
+        if extra is not None:
+            name = self.__OtherAttribute2FunctionBase[prop_name]
+        else:
+            name = self.__Attribute2FunctionBase[prop_name]
         key = getattr(self, prop_name)
-        if not key: return # property is not set
-        
-        dict = getattr(self, '_'+self.__class__.__name__+'__'+name)
-        func = getattr(self.__MetaMpx, 'set'+name)
-        deb.Always('Setting property '+prop_name) 
+        if not key:
+            return  # property is not set
+
+        dict = getattr(self, "_" + self.__class__.__name__ + "__" + name)
+        func = getattr(self.__MetaMpx, "set" + name)
+        deb.Always("Setting property " + prop_name)
         deb.Always(f"key = {key}")
         deb.Always(f"func = {func}")
         val = AttrHelper.getDictValue(dict, key.upper())
-        if  val is None:
-            deb.Error('Wrong value for property %s :%s' % (prop_name, val))
+        if val is None:
+            deb.Error("Wrong value for property %s :%s" % (prop_name, val))
         else:
-            if extra is not None: func(extra,val)
-            else: func(val)
+            if extra is not None:
+                func(extra, val)
+            else:
+                func(val)
 
-        
-#==================================================================
-#
-#    Maxipix read/write attribute methods
-#
-#==================================================================
+    # ==================================================================
+    #
+    #    Maxipix read/write attribute methods
+    #
+    # ==================================================================
 
-            
-    def __getattr__(self,name) :
+    def __getattr__(self, name):
         return AttrHelper.get_attr_4u(self, name, self.__MetaMpx)
 
-        
-
-#==================================================================
-#
-#    Maxipix command methods
-#
-#==================================================================
-#------------------------------------------------------------------
-#    getAttrStringValueList command:
-#
-#    Description: return a list of authorized values if any
-#    argout: DevVarStringArray   
-#------------------------------------------------------------------
+    # ==================================================================
+    #
+    #    Maxipix command methods
+    #
+    # ==================================================================
+    # ------------------------------------------------------------------
+    #    getAttrStringValueList command:
+    #
+    #    Description: return a list of authorized values if any
+    #    argout: DevVarStringArray
+    # ------------------------------------------------------------------
     @Core.DEB_MEMBER_FUNCT
     def getAttrStringValueList(self, attr_name):
         return AttrHelper.get_attr_string_value_list(self, attr_name)
+
 
 class MetaMaxipix5Class(PyTango.DeviceClass):
 
     class_property_list = {}
 
     device_property_list = {
-        'espia_dev_nb':
-        [PyTango.DevVarShortArray,
-         "Espia board device number for detector module #1 to #5",[]],
-        'config_path':
-        [PyTango.DevString,
-         "Configuration file path for modules",[]],
-        'config_name':
-        [PyTango.DevVarStringArray,
-         "Configuration name for module #1",[]],
-        'reconstruction_active':
-        [PyTango.DevBoolean,
-         "Set active or inactive the image reconstruction",[]],
-        'meta_config':
-        [PyTango.DevString,
-         "Meta configuration: 5x1 or 2x3", ['2x3']],
-        'fill_mode':
-        [PyTango.DevString,
-         "The default configuration loaded",[]],	 
-       'ready_level':
-        [PyTango.DevString,
-         "The ready output signal level",[]],	  
-       'gate_level':
-        [PyTango.DevString,
-         "The gate output signal level",[]],	  
-       'shutter_level':
-        [PyTango.DevString,
-         "The shutter output signal level",[]],	  
-       'trigger_level':
-        [PyTango.DevString,
-         "The trigger output signal level",[]],	  
-       'ready_mode':
-        [PyTango.DevString,
-         "The ready output signal level",[]],	  
-       'gate_mode':
-        [PyTango.DevString,
-         "The gate output signal level",[]],	  
-        }
+        "espia_dev_nb": [
+            PyTango.DevVarShortArray,
+            "Espia board device number for detector module #1 to #5",
+            [],
+        ],
+        "config_path": [PyTango.DevString, "Configuration file path for modules", []],
+        "config_name": [
+            PyTango.DevVarStringArray,
+            "Configuration name for module #1",
+            [],
+        ],
+        "reconstruction_active": [
+            PyTango.DevBoolean,
+            "Set active or inactive the image reconstruction",
+            [],
+        ],
+        "meta_config": [PyTango.DevString, "Meta configuration: 5x1 or 2x3", ["2x3"]],
+        "fill_mode": [PyTango.DevString, "The default configuration loaded", []],
+        "ready_level": [PyTango.DevString, "The ready output signal level", []],
+        "gate_level": [PyTango.DevString, "The gate output signal level", []],
+        "shutter_level": [PyTango.DevString, "The shutter output signal level", []],
+        "trigger_level": [PyTango.DevString, "The trigger output signal level", []],
+        "ready_mode": [PyTango.DevString, "The ready output signal level", []],
+        "gate_mode": [PyTango.DevString, "The gate output signal level", []],
+    }
 
     cmd_list = {
-        'getAttrStringValueList':
-        [[PyTango.DevString, "Attribute name"],
-         [PyTango.DevVarStringArray, "Authorized String value list"]],
-        }
+        "getAttrStringValueList": [
+            [PyTango.DevString, "Attribute name"],
+            [PyTango.DevVarStringArray, "Authorized String value list"],
+        ],
+    }
 
     attr_list = {
-        'energy_threshold':
-        [[PyTango.DevDouble,
-          PyTango.SCALAR,
-          PyTango.READ_WRITE],
-         {
-             'label':"Energy thresholds",
-             'unit':"keV",
-             'format':"%5.2f",
-             'description':"Threshold in energy (keV)",
-         }],
-        'config_name':
-        [[PyTango.DevString,
-          PyTango.SCALAR,
-          PyTango.READ],
-         {
-             'label':"Configuration name",
-             'unit':"N/A",
-             'format':"",
-             'description':"root name of the configuration files",
-         }],
-        'config_path':
-        [[PyTango.DevString,
-          PyTango.SCALAR,
-          PyTango.READ],
-         {
-             'label':"Configuration directory path",
-             'unit':"N/A",
-             'format':"",
-             'description':"Path of the configuration directory",
-         }],
-        'fill_mode':	  
-        [[PyTango.DevString,
-          PyTango.SCALAR,
-          PyTango.READ_WRITE],
-         {
-             'label':"Fill mode",
-             'unit':"enum.",
-             'format':"",
-             'description':"Between chip filling mode",
-         }],	  
-        'ready_mode':	  
-        [[PyTango.DevString,
-          PyTango.SCALAR,
-          PyTango.READ_WRITE],
-         {
-             'label':"Ready output mode",
-             'unit':"enum.",
-             'format':"",
-             'description':"Mode of the Ready output",
-         }],	  
-        'ready_level':	  
-        [[PyTango.DevString,
-          PyTango.SCALAR,
-          PyTango.READ_WRITE],
-         {
-             'label':"Ready output level",
-             'unit':"enum.",
-             'format':"",
-             'description':"The level logic of the Ready output",
-         }],	  
-        'shutter_level':	  
-        [[PyTango.DevString,
-          PyTango.SCALAR,
-          PyTango.READ_WRITE],
-         {
-             'label':"Shutter output level",
-             'unit':"enum.",
-             'format':"",
-             'description':"The level logic of the  Shutter output",
-         }],	  
-        'gate_mode':	  
-        [[PyTango.DevString,
-          PyTango.SCALAR,
-          PyTango.READ_WRITE],
-         {
-             'label':"The Gate input mode",
-             'unit':"enum.",
-             'format':"",
-             'description':"",
-         }],	  
-        'gate_level':	  
-        [[PyTango.DevString,
-          PyTango.SCALAR,
-          PyTango.READ_WRITE],
-         {
-             'label':"",
-             'unit':"",
-             'format':"",
-             'description':"",
-         }],	  
-        'trigger_level':	  
-        [[PyTango.DevString,
-          PyTango.SCALAR,
-          PyTango.READ_WRITE],
-         {
-             'label':"",
-             'unit':"",
-             'format':"",
-             'description':"",
-         }],
+        "energy_threshold": [
+            [PyTango.DevDouble, PyTango.SCALAR, PyTango.READ_WRITE],
+            {
+                "label": "Energy thresholds",
+                "unit": "keV",
+                "format": "%5.2f",
+                "description": "Threshold in energy (keV)",
+            },
+        ],
+        "config_name": [
+            [PyTango.DevString, PyTango.SCALAR, PyTango.READ],
+            {
+                "label": "Configuration name",
+                "unit": "N/A",
+                "format": "",
+                "description": "root name of the configuration files",
+            },
+        ],
+        "config_path": [
+            [PyTango.DevString, PyTango.SCALAR, PyTango.READ],
+            {
+                "label": "Configuration directory path",
+                "unit": "N/A",
+                "format": "",
+                "description": "Path of the configuration directory",
+            },
+        ],
+        "fill_mode": [
+            [PyTango.DevString, PyTango.SCALAR, PyTango.READ_WRITE],
+            {
+                "label": "Fill mode",
+                "unit": "enum.",
+                "format": "",
+                "description": "Between chip filling mode",
+            },
+        ],
+        "ready_mode": [
+            [PyTango.DevString, PyTango.SCALAR, PyTango.READ_WRITE],
+            {
+                "label": "Ready output mode",
+                "unit": "enum.",
+                "format": "",
+                "description": "Mode of the Ready output",
+            },
+        ],
+        "ready_level": [
+            [PyTango.DevString, PyTango.SCALAR, PyTango.READ_WRITE],
+            {
+                "label": "Ready output level",
+                "unit": "enum.",
+                "format": "",
+                "description": "The level logic of the Ready output",
+            },
+        ],
+        "shutter_level": [
+            [PyTango.DevString, PyTango.SCALAR, PyTango.READ_WRITE],
+            {
+                "label": "Shutter output level",
+                "unit": "enum.",
+                "format": "",
+                "description": "The level logic of the  Shutter output",
+            },
+        ],
+        "gate_mode": [
+            [PyTango.DevString, PyTango.SCALAR, PyTango.READ_WRITE],
+            {
+                "label": "The Gate input mode",
+                "unit": "enum.",
+                "format": "",
+                "description": "",
+            },
+        ],
+        "gate_level": [
+            [PyTango.DevString, PyTango.SCALAR, PyTango.READ_WRITE],
+            {
+                "label": "",
+                "unit": "",
+                "format": "",
+                "description": "",
+            },
+        ],
+        "trigger_level": [
+            [PyTango.DevString, PyTango.SCALAR, PyTango.READ_WRITE],
+            {
+                "label": "",
+                "unit": "",
+                "format": "",
+                "description": "",
+            },
+        ],
+        "espia_dev_nb": [
+            [PyTango.DevString, PyTango.SCALAR, PyTango.READ],
+            {
+                "label": "Espia board numbers",
+                "unit": "N/A",
+                "format": "",
+                "description": "he Espia board device numbers",
+            },
+        ],
+        "meta_config": [
+            [PyTango.DevString, PyTango.SCALAR, PyTango.READ],
+            {
+                "label": "Meta config mode",
+                "unit": "N/A",
+                "format": "",
+                "description": "Meta configuration mode 2x3 or 1x5",
+            },
+        ],
+    }
 
-        'espia_dev_nb':
-        [[PyTango.DevString,
-          PyTango.SCALAR,
-          PyTango.READ],
-         {
-             'label':"Espia board numbers",
-             'unit':"N/A",
-             'format':"",
-             'description':"he Espia board device numbers",
-         }],
-
-        'meta_config':
-        [[PyTango.DevString,
-          PyTango.SCALAR,
-          PyTango.READ],
-         {
-             'label':"Meta config mode",
-             'unit':"N/A",
-             'format':"",
-             'description':"Meta configuration mode 2x3 or 1x5",
-         }],                
-        }
-
-
-    def __init__(self,name) :
-        PyTango.DeviceClass.__init__(self,name)
+    def __init__(self, name):
+        PyTango.DeviceClass.__init__(self, name)
         self.set_type(name)
 
 
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 #                              Plugins
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 import time
 
 _MaxipixCamera = []
 _MaxipixInterface = []
 _MetaInterface = None
 
-def get_control(espia_dev_nb = [],
-                meta_config = '2x3',
-                config_path='',
-                config_name=[],
-                reconstruction_active='true', **keys) :
-    #properties are passed here as string
 
-    if reconstruction_active.lower() == 'true': active = True
-    else: active  = False
+def get_control(
+    espia_dev_nb=[],
+    meta_config="2x3",
+    config_path="",
+    config_name=[],
+    reconstruction_active="true",
+    **keys,
+):
+    # properties are passed here as string
+
+    if reconstruction_active.lower() == "true":
+        active = True
+    else:
+        active = False
     if len(config_name) != 5:
-        print (config_name)
+        print(config_name)
         raise Exception("Invalid number of priam configuration, must be 5 !")
     else:
         for p in range(5):
-            _MaxipixCamera.append(MaxipixModule.Camera(int(espia_dev_nb[p]), config_path, config_name[p], active))
-            
+            _MaxipixCamera.append(
+                MaxipixModule.Camera(
+                    int(espia_dev_nb[p]), config_path, config_name[p], active
+                )
+            )
+
             _MaxipixInterface.append(MaxipixModule.Interface(_MaxipixCamera[p]))
             time.sleep(2)
 
-        global _MetaInterface            
+        global _MetaInterface
         _MetaInterface = Meta.Interface()
-        
-        if meta_config == '2x3':
-            _MetaInterface.addInterface(0,0, _MaxipixInterface[0])
-            _MetaInterface.addInterface(0,1, _MaxipixInterface[1])
-            _MetaInterface.addInterface(1,0, _MaxipixInterface[2])
-            _MetaInterface.addInterface(1,1, _MaxipixInterface[3])
-            _MetaInterface.addInterface(1,2, _MaxipixInterface[4])
-            
-        elif meta_config == '1x5':
-            _MetaInterface.addInterface(0,0, _MaxipixInterface[0])
-            _MetaInterface.addInterface(0,1, _MaxipixInterface[1])
-            _MetaInterface.addInterface(0,2, _MaxipixInterface[2])
-            _MetaInterface.addInterface(0,3, _MaxipixInterface[3])
-            _MetaInterface.addInterface(0,4, _MaxipixInterface[4])
-        else:
-            raise Exception("Invalid value for property meta_config: "+meta_config)
 
-    
+        if meta_config == "2x3":
+            _MetaInterface.addInterface(0, 0, _MaxipixInterface[0])
+            _MetaInterface.addInterface(0, 1, _MaxipixInterface[1])
+            _MetaInterface.addInterface(1, 0, _MaxipixInterface[2])
+            _MetaInterface.addInterface(1, 1, _MaxipixInterface[3])
+            _MetaInterface.addInterface(1, 2, _MaxipixInterface[4])
+
+        elif meta_config == "1x5":
+            _MetaInterface.addInterface(0, 0, _MaxipixInterface[0])
+            _MetaInterface.addInterface(0, 1, _MaxipixInterface[1])
+            _MetaInterface.addInterface(0, 2, _MaxipixInterface[2])
+            _MetaInterface.addInterface(0, 3, _MaxipixInterface[3])
+            _MetaInterface.addInterface(0, 4, _MaxipixInterface[4])
+        else:
+            raise Exception("Invalid value for property meta_config: " + meta_config)
+
     return Core.CtControl(_MetaInterface)
-    
-    
+
+
 def get_tango_specific_class_n_device():
-    return MetaMaxipix5Class,MetaMaxipix5
+    return MetaMaxipix5Class, MetaMaxipix5
