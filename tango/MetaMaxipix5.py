@@ -1,10 +1,12 @@
 ############################################################################
 # This file is part of LImA, a Library for Image Acquisition
 #
-# Copyright (C) : 2009-2019
+# Copyright (C) : 2009-2024
 # European Synchrotron Radiation Facility
-# BP 220, Grenoble 38043
+# CS40220 38043 Grenoble Cedex 9 
 # FRANCE
+#
+# Contact: lima@esrf.fr
 #
 # This is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -55,30 +57,31 @@ class MetaMaxipix:
     Core.DEB_CLASS(Core.DebModApplication, 'MetaMaxipix')
 
     @Core.DEB_MEMBER_FUNCT
-    def __init__(self, mpx):
+    def __init__(self, hwint, mpx):
+        self.hwint = hwint
         self.mpx = mpx
         self.priam=[]
-        for p in range(5):
-            self.priam.append(mpx[p].priamAcq())
+        for h in hwint:
+            self.priam.append(h.priamAcq())
 
                 
     @Core.DEB_MEMBER_FUNCT
     def setFillMode(self, mode):
-        for m in range(5):
-            self.mpx[m].setFillMode(mode)
+        for h in self.hwint:
+            h.setFillMode(mode)
                 
     @Core.DEB_MEMBER_FUNCT
     def getFillMode(self):
-        if self.mpx[0].getFillMode() != self.mpx[1].getFillMode():
+        if self.hwint[0].getFillMode() != self.hwint[1].getFillMode():
             return -1
         else:
-            return self.mpx[0].getFillMode()
+            return self.hwint[0].getFillMode()
 
     
     @Core.DEB_MEMBER_FUNCT
     def setReadyMode(self, mode):
-        for p in range(5):
-            self.priam[p].setReadyMode(mode)
+        for p in self.priam:
+            p.setReadyMode(mode)
         
     @Core.DEB_MEMBER_FUNCT
     def getReadyMode(self):
@@ -89,8 +92,8 @@ class MetaMaxipix:
         
     @Core.DEB_MEMBER_FUNCT
     def setGateMode(self, mode):
-        for p in range(5):
-            self.priam[p].setGateMode(mode)
+        for p in self.priam:
+            p.setGateMode(mode)
         
     @Core.DEB_MEMBER_FUNCT
     def getGateMode(self):
@@ -101,8 +104,8 @@ class MetaMaxipix:
         
     @Core.DEB_MEMBER_FUNCT
     def setReadyLevel(self, level):
-        for p in range(5):
-            self.priam[p].setReadyLevel(level)
+        for p in self.priam:
+            p.setReadyLevel(level)
         
     @Core.DEB_MEMBER_FUNCT
     def getReadyLevel(self):
@@ -113,8 +116,8 @@ class MetaMaxipix:
         
     @Core.DEB_MEMBER_FUNCT
     def setGateLevel(self, level):
-        for p in range(5):
-            self.priam[p].setGateLevel(level)
+        for p in self.priam:
+            p.setGateLevel(level)
         
     @Core.DEB_MEMBER_FUNCT
     def getGateLevel(self):
@@ -125,8 +128,8 @@ class MetaMaxipix:
 
     @Core.DEB_MEMBER_FUNCT
     def setTriggerLevel(self, level):
-        for p in range(5):
-            self.priam[p].setTriggerLevel(level)
+        for p in self.priam:
+            p.setTriggerLevel(level)
 
     @Core.DEB_MEMBER_FUNCT
     def getTriggerLevel(self):
@@ -137,8 +140,8 @@ class MetaMaxipix:
     
     @Core.DEB_MEMBER_FUNCT
     def setShutterLevel(self, level):
-        for p in range(5):
-            self.priam[p].setShutterLevel(level)       
+        for p in self.priam:
+            p.setShutterLevel(level)       
         
     @Core.DEB_MEMBER_FUNCT
     def getShutterLevel(self):
@@ -149,33 +152,41 @@ class MetaMaxipix:
         
     @Core.DEB_MEMBER_FUNCT
     def setEnergy(self, energy):
-        for m in range(5):
-            self.mpx[m].setEnergy(energy)
+        for h in self.hwint:
+            h.setEnergy(energy)
                 
     @Core.DEB_MEMBER_FUNCT
     def getEnergy(self):
-        energy = self.mpx[0].getEnergy()
+        energy = self.hwint[0].getEnergy()
         return energy
         
         
     @Core.DEB_MEMBER_FUNCT
     def getConfigName(self) :
         cfg_name = ''
-        if self.config_name[0] and self.config_name[1]:
-            cfg_name = 'm1:'+self.config_name[0] +'/m2:'+self.config_name[1]+ \
-		'/m3:'+self.config_name[2] +'/m4:'+self.config_name[3]+ \
-		'/m5:'+self.config_name[4]
+        m = 1
+        for cfg in self.mpx.config_name:
+            cfg_name += f"m{m}: {cfg}, "
+            m += 1
         return cfg_name
 
-    ## @brief read the config path
-    #
-    def getConfigPath(self,attr) :
-       cfg_path = ''
-       if self.config_path:
-           cfg_path = self.config_path 
-       return cfg_path
+    @Core.DEB_MEMBER_FUNCT
+    def getConfigPath(self) :
+        cfg_path = ""
+        if self.mpx.config_path:
+            cfg_path = self.mpx.config_path 
+        return cfg_path
 
-        
+    @Core.DEB_MEMBER_FUNCT
+    def getEspiaDevNb(self):
+        espia_nb = ""
+        for espia in self.mpx.espia_dev_nb:
+            espia_nb += f"{espia}, "           
+        return espia_nb
+    
+    @Core.DEB_MEMBER_FUNCT
+    def getMetaConfig(self):
+        return self.mpx.meta_config
 
 class MetaMaxipix5(PyTango.Device_4Impl):
 
@@ -217,7 +228,7 @@ class MetaMaxipix5(PyTango.Device_4Impl):
                                          'energy_threshold': 'Energy'
                                          }
 
-        self.__MetaMpx = MetaMaxipix(_MaxipixInterface)
+        self.__MetaMpx = MetaMaxipix(_MaxipixInterface, self)
         
         self.init_device()
 
@@ -258,8 +269,9 @@ class MetaMaxipix5(PyTango.Device_4Impl):
         dict = getattr(self, '_'+self.__class__.__name__+'__'+name)
         func = getattr(self.__MetaMpx, 'set'+name)
         deb.Always('Setting property '+prop_name) 
-
-        val = AttrHelper._getDictValue(dict, key.upper())
+        deb.Always(f"key = {key}")
+        deb.Always(f"func = {func}")
+        val = AttrHelper.getDictValue(dict, key.upper())
         if  val is None:
             deb.Error('Wrong value for property %s :%s' % (prop_name, val))
         else:
@@ -443,7 +455,29 @@ class MetaMaxipix5Class(PyTango.DeviceClass):
              'unit':"",
              'format':"",
              'description':"",
-         }],	  
+         }],
+
+        'espia_dev_nb':
+        [[PyTango.DevString,
+          PyTango.SCALAR,
+          PyTango.READ],
+         {
+             'label':"Espia board numbers",
+             'unit':"N/A",
+             'format':"",
+             'description':"he Espia board device numbers",
+         }],
+
+        'meta_config':
+        [[PyTango.DevString,
+          PyTango.SCALAR,
+          PyTango.READ],
+         {
+             'label':"Meta config mode",
+             'unit':"N/A",
+             'format':"",
+             'description':"Meta configuration mode 2x3 or 1x5",
+         }],                
         }
 
 
@@ -470,7 +504,7 @@ def get_control(espia_dev_nb = [],
 
     if reconstruction_active.lower() == 'true': active = True
     else: active  = False
-    if len(config_name) is not 5:
+    if len(config_name) != 5:
         print (config_name)
         raise Exception("Invalid number of priam configuration, must be 5 !")
     else:
